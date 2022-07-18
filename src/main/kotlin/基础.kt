@@ -38,8 +38,10 @@ fun main(args: Array<String>) {
     str = null
     println(str?.get(555))
 
-    //三元表达式
+    // 三元表达式
     println(if (3 > 5) "3 > 5" else "3 <= 5")
+    // if(str != null) value = str; else value = "default";
+    var value = str ?: "default"
 
     // when类似于switch
     var num = 2
