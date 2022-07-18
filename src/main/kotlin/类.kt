@@ -7,13 +7,25 @@
 open class A(open var name: String?) {
 
 
+
     /*
      * companion object表示为static
      * 静态常量使用const val修饰，不要使用val，效果一样
      * 但不加const其实是一个private static变量，通过方法调用
      */
     companion object{
-        var age : Int = 666
+        /*
+         * by lazy 只能用来修饰val变量，只在首次调用的时候触发一次
+         * 可选择模式
+         * SYNCHRONIZED 同步模式，线程安全
+         * PUBLICATION 公共模式，允许多个线程初始化，但是只有一个有效
+         * NONE 会多次调用，且会改变常量的值为最后一次值线程不安全
+         */
+        val lazyValue: String by lazy (LazyThreadSafetyMode.NONE){
+            println("lazyValue 加载")
+            (++age).toString()
+        }
+        var age : Int = 18
         const val sex = "男"
     }
 
@@ -82,8 +94,11 @@ class B : A, Runnable{
  * Kotlin函数参数默认为final不允进行赋值操作
  */
 fun main(args: Array<String>) {
-
-    A.age = 18
+    // 首次调用出发lazy
+    A.lazyValue
+    // 不触发
+    A.lazyValue
+    A.lazyValue
     B()
     B("Bob")
     B("Alice", arrayOf("唱","跳" ,"rap" ,"篮球"))
