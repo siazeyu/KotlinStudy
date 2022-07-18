@@ -4,7 +4,8 @@
  * 其他地方还是得用 this.variable = variable
  * 主构造器表示一定会调用的构造器，一般将属性填入其中
  */
-open class A(var name: String?) {
+open class A(open var name: String?) {
+
 
     /*
      * companion object表示为static
@@ -22,6 +23,20 @@ open class A(var name: String?) {
 class B : A, Runnable{
 
     /*
+     * 属性get和set方法 field 为内置变量表示name的值，
+     * 不能直接使用name，否则死循环导致栈溢出
+     * 因为我们在调用 .name时就是调用get方法
+     */
+     override var name: String? = null
+         get() {
+             return "name: $field"
+        }
+        set(value) {
+            // 表示如果value == null 返回 "default name"
+            field = value ?: "default name"
+        }
+
+    /*
      * lateinit 表示延迟加载如果使用时没有被赋值就会抛出异常
      */
     private lateinit var hobby: Array<String>
@@ -35,11 +50,12 @@ class B : A, Runnable{
 
 
     constructor(name: String?): super(name){
+        this.name = name
         print("有参构造: ")
         this.print()
     }
 
-    constructor(name: String?, hobby: Array<String>): super(name){
+    constructor(name: String?, hobby: Array<String>): this(name){
         this.hobby = hobby
         print("有参构造: ")
         this.print()
@@ -47,7 +63,6 @@ class B : A, Runnable{
 
     constructor() : super(null){
         print("无参构造: ")
-        this.print()
     }
 
 
@@ -62,6 +77,10 @@ class B : A, Runnable{
 
 }
 
+/*
+ * 数组 表示展开接收参数的类型需要时varargs
+ * Kotlin函数参数默认为final不允进行赋值操作
+ */
 fun main(args: Array<String>) {
 
     A.age = 18
